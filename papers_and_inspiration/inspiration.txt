@@ -1,3 +1,5 @@
 http://www.tei-c.org/release/doc/tei-p5-doc/en/html/examples-said.html
-https://github.com/morethanbooks/XML-TEI-Bible
+https://github.com/dbamman/book-nlp
 http://www.cs.toronto.edu/~jbrooke/gutentag/
+https://github.com/morethanbooks/XML-TEI-Bible
+
