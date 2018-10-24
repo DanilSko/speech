@@ -22,7 +22,7 @@ class VerbTagger(PipelineStep):
                 regex = re.compile(r'((?<=[ \.:<>!-,])|^)'+'('+re.escape(word)+')'+'((?=[ \.:<>!-,]))')
                 for verb in list(self.__df_verbs['verb']):
                     if lemma == verb:
-                        string = re.sub(regex, '<speech_verb, '+'semantic='+ str(self.__df_verbs['semantic'].values[self.__df_verbs['verb']==lemma][0])+', emotion='+str(self.__df_verbs['emotion'].values[self.__df_verbs['verb']==lemma][0])+'>'+word+'</speech_verb>', string)
+                        string = re.sub(regex, '<speech_verb '+'semantic='+ str(self.__df_verbs['semantic'].values[self.__df_verbs['verb']==lemma][0])+' emotion='+str(self.__df_verbs['emotion'].values[self.__df_verbs['verb']==lemma][0])+'>'+word+'</speech_verb>', string)
             return string
     
     def __find_comments(self, text):
@@ -34,4 +34,6 @@ class VerbTagger(PipelineStep):
         dictionary = self.make_dict(comments, self.__make_new_comments)
         for key in dictionary:
             text = re.sub(re.escape(key), dictionary[key], text)
+        text = re.sub(r'(?P<verb><speech_verb.+?>)+', r'\g<verb>', text)
+        text = re.sub('(</speech_verb>)+', '</speech_verb>', text)
         return text

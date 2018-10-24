@@ -98,6 +98,13 @@ def _delete_newlines(text):
         return text
     else:
         return text_
+    
+def delete2(text):
+    text1 = re.sub(' +', ' ', text)
+    text2 = re.sub(r'\n(?P<cap> [а-яё])', r'\g<cap>', text1)
+    text3 = re.sub(r'(?P<punc>[^!\?\.\:])\n', r'\g<punc>', text2)
+    text4 = re.sub('[  ]+', ' ', text3)
+    return text4
 
 
 def main():
@@ -121,7 +128,7 @@ def main():
     for textpath in list_of_textfiles:
         try:
             text = _read_file(textpath)
-            text = _delete_newlines(text)
+            text = delete2(text)
             text = pipeline.apply_to(text)
             _write_to_file(output_path, directory_path, textpath, text)
         except UnicodeDecodeError:

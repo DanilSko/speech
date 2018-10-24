@@ -3,6 +3,9 @@ from itertools import zip_longest as zip_long
 import texterra
 import re
 import copy
+from sentimental import Sentimental
+
+sent = Sentimental()
 
 
 class CharacterDetector(PipelineStep):
@@ -59,12 +62,19 @@ class CharacterDetector(PipelineStep):
         said_author_ = self.__get_said_author_from_text(speech_)
         prev_who = None
         for said_, author_ in said_author_:
-            who = self.__define_who(author_)
+            #who = self.__define_who(author_)
+            who=None
             if who is None and prev_who is not None:
                 who = prev_who
             #corresp = self.__define_corresp(self.__delete_tags(speech_), author_, said_)
             if said_ != None:
-                said_result = '<said who="{}" corresp="{}" aloud="true" type = "direct">'.format(who, "None")\
+                result = sent.analyze(said_)
+                result = {'negative': result['negative'],'positive': result["positive"]}
+                if result['negative']==result['positive']:
+                    sentiment='neutral'
+                else:
+                    sentiment = sorted(result.items(),key=lambda x:x[1], reverse=True)[0][0]
+                said_result = '<said characteristic="{}" who="{}" corresp="{}" aloud="true" type="direct">'.format(sentiment, "None", "None")\
                               + said_ + "</said>"
                 speech_result = re.sub(re.escape("<{}>".format(self.__said)+said_+"</{}>".format(self.__said)),
                                        said_result,
