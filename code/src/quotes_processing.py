@@ -7,9 +7,9 @@ class QuotesAdapter(PipelineStep):
     SPECIFIC_QUOTES_OPEN = '„“‘„'
     SPECIFIC_QUOTES_CLOSE = '“”’”'
 
-    def __init__(self, rule_df):
+    def __init__(self, path):
         super().__init__()
-        self.__rule_df = rule_df
+        self.__rule_df = self.read_csv(path, ';')
 
     def annotate(self, text):
         text = self.__replace_specific_quotes(text)

@@ -3,9 +3,9 @@ from step import PipelineStep
 
 
 class SpeechDetector(PipelineStep):
-    def __init__(self, rule_df):
+    def __init__(self, path):
         super().__init__()
-        self.rule_df = rule_df
+        self.rule_df = self.read_csv(path, ';')
 
     def annotate(self, text):
         for ind in range(len(list(self.rule_df.values))):

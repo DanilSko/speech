@@ -1,13 +1,13 @@
 from quotes_processing import QuotesAdapter
 from speech_detector import SpeechDetector
+from file_reader import FileReader
 from said_comment_tagger import SaidCommentTagger
 from verb_tagger import VerbTagger
 from character_detector import CharacterDetector
+from sentiment_detector import SentimentDetector
 from pipeline import Pipeline
-import pandas as pd
 import argparse
 import os
-import re
 
 CR_V_DATA_PATH = "cross_validation_data"
 TOKENS = "tokens.txt"
@@ -22,29 +22,30 @@ TEST_WITH_TITLES_CONCEPTS = "concepts_with_titles_test.txt"
 
 def _get_data_from_cmd():
     parser = argparse.ArgumentParser(description='Train sequence translation for wikification')
-    parser.add_argument('-d', type=str, dest='directory', metavar='<directory>',
+    parser.add_argument('-d', type=str, dest='directory_path', metavar='<directory>',
                         required=False, help='directory for input corpus')
-    parser.add_argument('-i', type=str, dest='input_file', metavar='<single input file>',
+    parser.add_argument('-i', type=str, dest='text_path', metavar='<single input file>',
                         required=False, help='single input file')
-    parser.add_argument('-q', type=str, dest='quotes_csvfile', metavar='<quotes csv file>',
-                        required=False, help='quotes csv file', default="..\\csv_files\\quotes.csv")
-    parser.add_argument('-s', type=str, dest='speech_csvfile', metavar='<speech csv file>',
-                        required=False, help='speech csv file', default="..\\csv_files\\speech.csv")
-    parser.add_argument('-v', type=str, dest='verb_csvfile', metavar='<verb csv file>',
-                        required=False, help='verb csv file', default="..\\csv_files\\verbs.csv")
+    parser.add_argument('-q', type=str, dest='quotes_path', metavar='<quotes csv file>',
+                        required=False, help='quotes csv file', default="../csv_files/quotes.csv")
+    parser.add_argument('-s', type=str, dest='speech_path', metavar='<speech csv file>',
+                        required=False, help='speech csv file', default="../csv_files/speech.csv")
+    parser.add_argument('-v', type=str, dest='verb_path', metavar='<verb csv file>',
+                        required=False, help='verb csv file', default="../csv_files/verbs.csv")
     parser.add_argument('-o', type=str, dest='output_path', metavar='<output path>',
-                        required=False, help='output path', default="..\\output\\")
+                        required=False, help='output path', default="../output/")
 
     args = parser.parse_args()
-    directory = args.directory
-    input_file = args.input_file
+    directory = args.directory_path
+    input_file = args.text_path
     if directory is None and input_file is None:
         print(parser.exit("Enter either -d directory or -i single file path "))
-    quotes_file = args.quotes_csvfile
-    speech_file = args.speech_csvfile
-    verb_file = args.verb_csvfile
-    output_path = args.output_path
-    return directory, input_file, quotes_file, speech_file, verb_file, output_path
+    return args
+
+
+# --------------------------------------------------------------------
+# read and write
+# --------------------------------------------------------------------
 
 
 def _create_folder_if_absent(path):
@@ -58,19 +59,6 @@ def _get_list_of_text_files(dirpath):
         for name in filenames:
             file_paths.append(os.path.join(dirname, name))
     return file_paths
-
-
-# --------------------------------------------------------------------
-# read and write
-# --------------------------------------------------------------------
-
-def _read_csv(path, sep):
-    return pd.read_csv(path, index_col=None, sep=sep)
-
-
-def _read_file(path):
-    with open(path, 'r', encoding='utf-8') as file:
-        return file.read()
 
 
 def _write_to_file(path, dirpath, name, data):
@@ -87,51 +75,33 @@ def _write_to_file(path, dirpath, name, data):
         return file.write(data)
 
 
-def _delete_newlines(text):
-    text_ = text.replace("\n         ", "%%%")
-    text_ = text_.replace('\n    ', '')
-    text_ = text_.replace('     \xa0\xa0     ', '\n')
-    text_ = text_.replace("%%%", "\n")
-    text_ = re.sub(r'\xa0\xa0', '', text_)
-    text_ = re.sub(r'[ ]+', ' ', text_)
-    if len(text_.split("\n")) <= 5:
-        return text
-    else:
-        return text_
-    
-def delete2(text):
-    text1 = re.sub(' +', ' ', text)
-    text2 = re.sub(r'\n(?P<cap> [а-яё])', r'\g<cap>', text1)
-    text3 = re.sub(r'(?P<punc>[^!\?\.\:])\n', r'\g<punc>', text2)
-    text4 = re.sub('[  ]+', ' ', text3)
-    return text4
+# --------------------------------------------------------------------
+# main
+# --------------------------------------------------------------------
 
 
 def main():
-    directory_path, text_path, quotes_path, speech_path, verb_path, output_path = _get_data_from_cmd()
+    args = _get_data_from_cmd()
 
-    quotes_rules = _read_csv(quotes_path, ';')
-    speech_rules = _read_csv(speech_path, ';')
-
-    quotes_adapter = QuotesAdapter(quotes_rules)
-    speech_detector = SpeechDetector(speech_rules)
+    reader = FileReader()
+    quotes_adapter = QuotesAdapter(args.quotes_path)
+    speech_detector = SpeechDetector(args.speech_path)
     said_comment_tagger = SaidCommentTagger()
-    verb_tagger = VerbTagger(verb_path)
-    character_detector = CharacterDetector()
-    pipeline = Pipeline(quotes_adapter, speech_detector, said_comment_tagger, verb_tagger, character_detector)
+    verb_tagger = VerbTagger(args.verb_path)
+    sentiment_detectror = SentimentDetector()
+    # character_detector = CharacterDetector()
+    
+    pipeline = Pipeline(reader, quotes_adapter, speech_detector, 
+                        said_comment_tagger, verb_tagger, sentiment_detectror)  #, character_detector)
 
-    if directory_path is None:
-        list_of_textfiles = [text_path]
-    else:
-        list_of_textfiles = _get_list_of_text_files(directory_path)
+    list_of_textfiles = [args.text_path] if args.directory_path is None else _get_list_of_text_files(args.directory_path)
 
     for textpath in list_of_textfiles:
         try:
-            text = _read_file(textpath)
-            text = delete2(text)
-            text = pipeline.apply_to(text)
-            _write_to_file(output_path, directory_path, textpath, text)
+            text = pipeline.apply_to(textpath)
+            _write_to_file(args.output_path, args.directory_path, textpath, text)
         except UnicodeDecodeError:
+            #TODO: logging
             with open("logs.txt", 'a') as logs:
                 print("unicode error in", textpath)
                 logs.write("unicode error in " + textpath + "\n")
