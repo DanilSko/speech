@@ -1,17 +1,17 @@
-## Репозиторий проекта (не)прямая речь
+## Supported tags and respective `Dockerfile` links
 
-Вход: plain text 
+* [`latest` _(Dockerfile)_](https://github.com/hseling/hseling-api-direct-speech/blob/master/Dockerfile)
 
-Выход: TEI/XML (см. http://www.tei-c.org/index.xml)
+# hseling-api-direct-speech
 
-### Подробности: https://github.com/DanilSko/speech/wiki
+**Docker** image with **uWSGI** and **Nginx** for **Flask** web applications in **Python 3.7**, **Python 3.6** running in a single container. Optionally using Alpine Linux.
 
-### Статья: https://github.com/DanilSko/speech/blob/master/authomatic-direct-speech.pdf
+Images use [tiangolo/uwsgi-nginx-flask-docker](https://hub.docker.com/r/tiangolo/uwsgi-nginx-flask/) as base image. Please visit https://github.com/tiangolo/uwsgi-nginx-flask-docker for more information on how to use it.
 
-### Contacts:
+## Description
 
-Irina Nikishina:  irina.nikishina@mail.ru
+Use `docker-compose build` and `docker-compose up` to run image in full development environment.
 
-Irina Sokolova: irina.sokolovalxxxix@gmail.com
+**GitHub repo**: <https://github.com/hseling/hseling-api-direct-speech>
 
-Daniil Tikhomirov: dan.tijomirov@gmail.com
+**Docker Hub image**: <https://hub.docker.com/r/hseling/hseling-api-direct-speech/>

@@ -1,0 +1,23 @@
+{
+"speech": 278, 
+"said": 375, 
+"said_type_direct": 350, 
+"said_type_indirect": 13, 
+"said_aloud_true": 341, 
+"said_aloud_false": 23, 
+"author_comment": 222, 
+"speech_verb": 212, 
+"speech_verb_semantic_speech": 189, 
+"speech_verb_semantic_action": 5, 
+"speech_verb_semantic_thought": 9, 
+"speech_verb_semantic_song": 1, 
+"speech_verb_emotion_neutral": 140, 
+"speech_verb_emotion_loud": 22, 
+"speech_verb_emotion_rude": 1, 
+"speech_verb_emotion_sad": 4, 
+"speech_verb_emotion_interrupt": 2, 
+"speech_verb_emotion_yes": 7, 
+"speech_verb_emotion_no": 2, 
+"speech_verb_emotion_emotional": 1, 
+"speech_verb_emotion_question": 22
+}
