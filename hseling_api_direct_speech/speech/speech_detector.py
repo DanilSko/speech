@@ -3,7 +3,7 @@ from .step import PipelineStep
 
 
 class SpeechDetector(PipelineStep):
-    def __init__(self, path):
+    def __init__(self, path="csv_files/speech.csv"):
         super().__init__()
         self.rule_df = self.read_csv(path, ';')
 

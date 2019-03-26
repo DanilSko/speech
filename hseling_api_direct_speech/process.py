@@ -8,10 +8,10 @@ from .speech.said_comment_tagger import SaidCommentTagger
 
 def process_data(text):
     reader = FileReader()
-    quotes_adapter = QuotesAdapter("csv_files/quotes.csv")
-    speech_detector = SpeechDetector("csv_files/speech.csv")
+    quotes_adapter = QuotesAdapter()
+    speech_detector = SpeechDetector()
     said_comment_tagger = SaidCommentTagger()
-    verb_tagger = VerbTagger("csv_files/verbs.csv")
+    verb_tagger = VerbTagger()
     pipeline = Pipeline(reader, quotes_adapter, speech_detector,
                             said_comment_tagger, verb_tagger)
     result = pipeline.apply_to(text)

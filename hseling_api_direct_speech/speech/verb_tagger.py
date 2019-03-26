@@ -9,7 +9,7 @@ morph = pymorphy2.MorphAnalyzer()
 class VerbTagger(PipelineStep):
     COMMENT = r'<author_comment>(.+?)</author_comment>'
 
-    def __init__(self, path):
+    def __init__(self, path="csv_files/verbs.csv"):
         super().__init__()
         self.__df_verbs = self.read_dict_csv(path, sep=';')
 

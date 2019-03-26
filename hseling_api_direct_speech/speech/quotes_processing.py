@@ -8,7 +8,7 @@ class QuotesAdapter(PipelineStep):
     SPECIFIC_QUOTES_OPEN = '„“‘„'
     SPECIFIC_QUOTES_CLOSE = '“”’”'
 
-    def __init__(self, path):
+    def __init__(self, path="csv_files/quotes.csv"):
         super().__init__()
         self.__rule_df = self.read_csv(path, ';')
 
